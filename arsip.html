@@ -213,14 +213,14 @@ async function unduhTabel({ nama, judul, sub, kolom, data }) {
 }
 function unduhDaftar() {
   const L = dataDaftar();
-  unduhTabel({ nama: `Arsip_Matdas_${INFO.periode}_rekap`, judul: "Rekap Semester (Arsip)", sub: INFO.nama,
+  unduhTabel({ nama: `Arsip_Literasi_${INFO.periode}_rekap`, judul: "Rekap Semester (Arsip)", sub: INFO.nama,
     kolom: [["Nama", 28], ["NISN", 13], ["Rombel", 12], ["Kelas", 9], ["Sesi: soal", 10], ["Sesi: benar", 10], ["Sesi: akurasi %", 10], ["Sesi: hari", 9],
       ["Level tuntas (sesi)", 12], ["Mandiri: soal", 10], ["Mandiri: benar", 10], ["Mandiri: hari", 9], ["Level tuntas (mandiri)", 12], ["Waktu (menit)", 10]],
     data: L.map((x) => [x.nama, x.nisn, x.kelompok, x.kelas, x.kj, x.kb, x.kj ? Math.round(100 * x.kb / x.kj) : "", x.kh, x.kt, x.mj, x.mb, x.mh, x.mt, Math.round(x.detik / 60)]) });
 }
 function unduhSiswa(s) {
   const L = baris("select * from jawaban where nisn in (?, ?) order by waktu, id", [s.nisn, "M:" + s.nisn]);
-  unduhTabel({ nama: `Arsip_Matdas_${INFO.periode}_${s.nisn}`, judul: "Rincian Jawaban (Arsip)", sub: `${s.nama} · ${INFO.nama}`,
+  unduhTabel({ nama: `Arsip_Literasi_${INFO.periode}_${s.nisn}`, judul: "Rincian Jawaban (Arsip)", sub: `${s.nama} · ${INFO.nama}`,
     kolom: [["Waktu", 18], ["Jenis", 10], ["Tingkat", 26], ["Level", 7], ["No", 6], ["Soal", 26], ["Jawaban", 12], ["Kunci", 12], ["Hasil", 16], ["Lama (dtk)", 9]],
     data: L.map((x) => [tglTeks(x.waktu, true), x.nisn.startsWith("M:") ? "mandiri" : "sesi", namaT(x.tingkat), x.level, x.nomor, soalPolos(x.soal), x.jawaban, x.kunci,
       x.benar ? "benar" : jenisLabel(x.jenis_salah), x.detik]) });

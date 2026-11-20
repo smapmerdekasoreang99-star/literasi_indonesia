@@ -83,7 +83,7 @@
 
   // ======================= RAPOR SATU KELOMPOK =======================
   function rapor(wadah, D, o) {
-    o = Object.assign({ satuan: "level", kelompokLbl: "kelompok", target: 80, nilaiRata: false,
+    o = Object.assign({ satuan: "level", kelompokLbl: "rombel", target: 80, nilaiRata: false,
       macetKet: "Siswa yang 3 kali atau lebih mengulang level yang sama, atau 8 kali salah di level itu." }, o || {});
     const AK = o.nilaiRata ? "rata-rata nilai" : "akurasi", AKB = o.nilaiRata ? "Rata-rata nilai" : "Akurasi rata-rata", AKS = o.nilaiRata ? "" : "%";
     const K = (D.kelompok || [])[0] || {}, S = D.siswa || [], L = K.lalu || null;
@@ -245,7 +245,7 @@
 
   // ======================= PERBANDINGAN ANTARKELOMPOK =======================
   function banding(wadah, D, o) {
-    o = Object.assign({ satuan: "level", kelompokLbl: "kelompok" }, o || {});
+    o = Object.assign({ satuan: "level", kelompokLbl: "rombel" }, o || {});
     const K0 = (D.kelompok || []).filter((k) => k.n_siswa > 0), K = K0.filter((k) => k.n_aktif > 0), diam = K0.filter((k) => !k.n_aktif).map((k) => k.kelompok);
     const ketDiam = diam.length ? `<p class="rk-ket"><b>Tidak berlatih pada periode ini (${diam.length}):</b> ${diam.map(esc).join(", ")}. Tidak ikut dibandingkan.</p>` : "";
     if (!K.length) { wadah.innerHTML = `<div class="rk"><div class="rk-pita"><p class="rk-kalimat">Belum ada ${o.kelompokLbl} yang berlatih pada periode ini.</p></div>${ketDiam}</div>`; return; }

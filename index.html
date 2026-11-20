@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Literasi Bahasa Indonesia — SMA Plus Merdeka Soreang</title>
 <!-- Pratinjau tautan (WhatsApp dll.): judul seragam "Aplikasi · Halaman — Sekolah" -->
-<meta name="description" content="Latihan hitung bertahap: selesaikan 10 soal dengan benar untuk naik level.">
+<meta name="description" content="Latihan Bahasa Indonesia bertahap untuk TKA dan UTBK: membaca, kebahasaan, dan penalaran.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SMA Plus Merdeka Soreang">
 <meta property="og:locale" content="id_ID">
 <meta property="og:title" content="Literasi Bahasa Indonesia — SMA Plus Merdeka Soreang">
-<meta property="og:description" content="Latihan hitung bertahap: selesaikan 10 soal dengan benar untuk naik level.">
+<meta property="og:description" content="Latihan Bahasa Indonesia bertahap untuk TKA dan UTBK: membaca, kebahasaan, dan penalaran.">
 <meta property="og:image" content="https://smapmerdekasoreang99-star.github.io/literasi_indonesia/assets/pratinjau.jpg?v=3">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="100">
@@ -318,7 +318,7 @@ details.peta[open] summary::before { transform: rotate(90deg); }
     </details>
     <div class="kartu posisi-kartu">
       <div class="posisi-atas">
-        <div class="baris-atas"><span class="modul" id="p-modul">MD10</span><span id="p-urut">Tingkat 1 dari 14</span></div>
+        <div class="baris-atas"><span class="modul" id="p-modul">TKA</span><span id="p-urut">Tingkat 1 dari 14</span></div>
         <div class="tk" id="p-tingkat">Penjumlahan Dasar</div>
         <div class="lv" id="p-level"></div>
         <div class="maju-total" title="Kemajuan di seluruh modul"><div class="batang"><i id="p-batang" style="width:0"></i></div><span id="p-ke">0 dari 105 level</span></div>
@@ -426,7 +426,7 @@ function isiPosisi() {
   const p = S.posisi, nb = S.atur.n_benar, bs = S.atur.batas_salah;
   const peta = S.peta || [], ke = peta.findIndex((x) => x.status === "sekarang");
   // Tahapan khusus: label tahapan dan "Langkah x dari y" menggantikan MD dan nomor tingkat
-  $("p-modul").textContent = S.jalur ? `Tahapan · ${S.jalur.nama}` : p.modul ? `MD${p.modul}` : "Literasi Bahasa Indonesia";
+  $("p-modul").textContent = S.jalur ? `Tahapan · ${S.jalur.nama}` : p.modul ? labelModul(p.modul) : "Literasi Bahasa Indonesia";
   $("p-urut").textContent = ke >= 0 ? `${S.jalur ? "Langkah" : "Tingkat"} ${ke + 1} dari ${peta.length}` : "";
   $("p-tingkat").textContent = p.nama;
   $("p-level").innerHTML = `<b>Level ${p.level}</b> dari ${p.n_level}${p.ket ? " · " + esc(p.ket) : ""}`;
@@ -957,7 +957,7 @@ async function gambarMandiri() {
   if (!MATERI) { try { MATERI = await rpc("lit_materi_mandiri", { p_token: S.token }); } catch (e) { MATERI = []; } }
   const isiLevel = () => { const t = MATERI.find((x) => x.kode === $("mk-tingkat").value);
     $("mk-level").innerHTML = (t ? t.level : []).map((l) => `<option value="${l.level}">Level ${l.level}${l.ket ? ": " + esc(l.ket) : ""}</option>`).join(""); };
-  $("mk-tingkat").innerHTML = MATERI.map((t) => `<option value="${t.kode}">MD${t.modul} · ${esc(t.nama)}</option>`).join("");
+  $("mk-tingkat").innerHTML = MATERI.map((t) => `<option value="${t.kode}">${labelModul(t.modul)} · ${esc(t.nama)}</option>`).join("");
   if (S.posisi && MATERI.some((t) => t.kode === S.posisi.tingkat)) $("mk-tingkat").value = S.posisi.tingkat;
   isiLevel();
   if (S.posisi) $("mk-level").value = String(S.posisi.level);

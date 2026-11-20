@@ -4,6 +4,14 @@
    menjawab. */
 "use strict";
 
+/* Bagian tingkat Literasi (kolom kelas pada lit_tingkat; di Matdas berisi 10/11/12).
+   1 = Bagian A Persiapan TKA (juga Literasi Bahasa Indonesia UTBK), 2 = Bagian B Persiapan UTBK. */
+const BAGIAN = {
+  1: { kode: "TKA", nama: "Bagian A · Persiapan TKA", ket: "Literasi membaca teks informasi dan sastra" },
+  2: { kode: "UTBK", nama: "Bagian B · Persiapan UTBK", ket: "Kebahasaan, kosakata, dan penalaran (PBM, PPU, PU)" },
+};
+const labelModul = (m) => (BAGIAN[m] || {}).kode || `Bagian ${m}`;
+
 const SB = (() => {
   const q = new URLSearchParams(location.search);
   if (q.get("sb") && q.get("key")) return { url: q.get("sb"), key: q.get("key") };
