@@ -1141,7 +1141,7 @@ async function masuk(pin, diam) {
   try {
     G = await rpc("lit_guru_masuk", { p_pin: pin });
     PIN = pin; PERAN = G.peran; ssSet(KUNCI_PIN, pin);
-    $("hd-sub").textContent = PERAN === "admin" ? "Masuk sebagai admin" : `${G.nama} · ${G.kelompok.join(", ") || "belum ada rombel"}`;
+    $("hd-sub").textContent = PERAN === "admin" ? "Masuk sebagai admin" : G.koordinator ? `${G.nama} · Koordinator literasi (semua rombel)` : `${G.nama} · ${G.kelompok.join(", ") || "belum ada rombel"}`;
     $("tab-admin").classList.toggle("hidden", PERAN !== "admin"); $("tab").classList.toggle("tujuh", PERAN === "admin");
     $("pin-sementara").classList.toggle("hidden", !G.sementara);
     $("pin-sementara").innerHTML = G.sementara ? `Anda masuk dengan <b>PIN sementara</b>. Minta PIN pribadi kepada admin Literasi Bahasa Indonesia agar akun Anda tidak bisa dipakai orang lain.` : "";
@@ -3817,6 +3817,18 @@ function gambarAdmin() {
       : `<p class="butir redup">Belum ada guru. Tekan <b>Tarik guru dari Data Induk</b>. Bila tetap kosong, lengkapi jadwal KBM mapel Bahasa Indonesia di Data Induk.</p>`}
   </section>
   <section class="kartu seksi">
+    <div class="seksi-kepala"><span class="seksi-ikon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0M12 13.5v3"/></svg></span>
+      <div><h2>Koordinator literasi</h2><p>Koordinator masuk dengan PIN pribadinya dan melihat semua rombel, tanpa menu admin. Tetap terdaftar meski guru ditarik ulang dari Data Induk.</p></div></div>
+    ${(ADM.koordinator || []).length ? `<div class="gulir seksi-tabel"><table class="tabel adm-tabel"><thead><tr><th>Koordinator</th><th>Masuk dengan</th><th></th></tr></thead><tbody>${ADM.koordinator.map((g) => `<tr class="${g.aktif ? "" : "nonaktif"}">
+        <td><b>${esc(g.nama)}</b>${g.aktif ? "" : '<span class="kecil redup">Tidak aktif</span>'}</td>
+        <td>${g.status === "acak" ? '<span class="lencana baik">PIN pribadi</span>' : '<span class="lencana emas">ID guru (sementara)</span>'}</td>
+        <td><button class="garis kecil" data-koor-hapus="${esc(g.id)}">Lepas</button></td></tr>`).join("")}</tbody></table></div>`
+      : `<p class="butir redup">Belum ada koordinator.</p>`}
+    <div class="atur-baris"><div class="l"><b>Tambah koordinator</b><span>Pilih dari daftar guru Matdas / Asesmen Merdeka.</span></div>
+      <div class="kendali"><select id="koor-pilih" aria-label="Pilih guru"><option value="">Pilih guru…</option>${(ADM.semua_guru || []).filter((g) => !(ADM.koordinator || []).some((k) => k.id === g.id)).map((g) => `<option value="${esc(g.id)}">${esc(g.nama)}</option>`).join("")}</select>
+        <button class="garis kecil" id="koor-tambah">Tambahkan</button></div></div>
+  </section>
+  <section class="kartu seksi">
     <div class="seksi-kepala"><span class="seksi-ikon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></svg></span>
       <div><h2>Ukuran database &amp; arsip semester</h2><p>Rincian latihan semester yang sudah berakhir disimpan sebagai berkas arsip, lalu dihapus dari database.</p></div></div>
     <div id="arsip-isi"><p class="butir redup">Memuat…</p></div>
@@ -3831,6 +3843,14 @@ function gambarAdmin() {
     <p class="catatan-seksi"><span>Hanya beberapa siswa? Hapus satu siswa di <b>Analisis Siswa</b>; beberapa siswa atau satu rombel di <b>Sesi Kegiatan</b> → centang → <b>Hapus data latihan</b>.</span></p>
   </section>`;
   muatArsip();
+
+  const setKoor = async (id, aktif) => {
+    try { await rpc("lit_set_koordinator", { p_pin: PIN, p_guru_id: id, p_aktif: aktif }); toast(aktif ? "Koordinator ditambahkan" : "Koordinator dilepas"); muatAdmin(); }
+    catch (e) { toast(e.message); }
+  };
+  $("koor-tambah").onclick = () => { const id = $("koor-pilih").value; if (!id) return toast("Pilih guru dulu"); setKoor(id, true); };
+  document.querySelectorAll("[data-koor-hapus]").forEach((b) => b.onclick = () => {
+    if (confirm("Lepas guru ini dari koordinator literasi?")) setKoor(b.dataset.koorHapus, false); });
 
   $("adm-tarik").onclick = async (ev) => {
     const b = ev.currentTarget, t = b.textContent; b.disabled = true; b.textContent = "Menarik…";
